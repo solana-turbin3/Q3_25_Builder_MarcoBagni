@@ -1,4 +1,4 @@
-import wallet from "../dev-wallet.json"
+import wallet from "../turbin3-wallet.json"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
 import { 
     createMetadataAccountV3, 
@@ -10,7 +10,7 @@ import { createSignerFromKeypair, signerIdentity, publicKey } from "@metaplex-fo
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 // Define our Mint address
-const mint = publicKey("<mint address>")
+const mint = publicKey("FxqSJ7HL65BXtxkvnShi63yM3xkVDt7VYrdEQTdpACgV")
 
 // Create a UMI connection
 const umi = createUmi('https://api.devnet.solana.com');
