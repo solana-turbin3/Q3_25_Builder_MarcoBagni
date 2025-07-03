@@ -7,9 +7,10 @@ edition = "2021"
 [lib]
 
 [dependencies]
+dotenvy = "0.15"
 bs58 = "0.4.0"
 borsh = "0.10.3"
-solana-sdk = "1.15.2"
-solana-client = "1.15.2"
-solana-program = "1.15.2"
+solana-sdk = "1.17.0"
+solana-client = "1.17.0"
+solana-program = "1.17.0"
 solana-idlgen = { git = "https://github.com/deanmlittle/solana-idlgen.git" }

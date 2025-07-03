@@ -1,0 +1,21 @@
+{
+  "name": "turbin3-100",
+  "symbol": "TRB3-100",
+  "description": "Wind-powered token 100 edition",
+  "image": "https://gateway.irys.xyz/4Xe9uZm29jCmgoSyTdyvEVXCPv7xwWE97b3wKW65wvti",
+  "attributes": [
+    { "trait_type": "powered", "value": "wind" },
+    { "trait_type": "supply", "value": "100" },
+    { "trait_type": "decimals", "value": "6" }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://gateway.irys.xyz/4Xe9uZm29jCmgoSyTdyvEVXCPv7xwWE97b3wKW65wvti",
+        "type": "image/jpeg"
+      }
+    ],
+    "category": "image"
+  },
+  "creators": [{ "address": "YOUR_WALLET_ADDRESS_HERE", "share": 100 }]
+}
