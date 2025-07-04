@@ -1,61 +1,59 @@
 import {
-  createSolanaClient,
-  SolanaClusterMoniker,
-  signTransactionMessageWithSigners,
-  getSignatureFromTransaction,
-  getExplorerLink,
-  address,
-} from "gill";
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  SystemProgram,
+} from "@solana/web3.js";
+import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
+import wallet from "../wallet";
 
-import {
-  buildTransferTokensTransaction,
-  //getAssociatedTokenAccountAddress,
-  TOKEN_PROGRAM_ADDRESS,
-} from "gill/programs/token";
-
-import { signer } from "../wallet";
-
-const cluster: SolanaClusterMoniker = "devnet";
-const { rpc, sendAndConfirmTransaction } = createSolanaClient({
-  urlOrMoniker: cluster,
-});
+const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
+const connection = new Connection("https://api.devnet.solana.com");
 
 async function main() {
-  const recipientWallet = "d3xLThcDtBxjpiw9MkSbK6YyCrcc1eTrWEg2b8bFHHD";
-  const mintAddress = "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX";
-
-  /*const destinationAta = await getAssociatedTokenAccountAddress(
-    mintAddress,
-    address(recipientWallet),
-    TOKEN_PROGRAM_ADDRESS
-  );*/
-
-  const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
-
-  const tx = await buildTransferTokensTransaction({
-    feePayer: signer,
-    latestBlockhash,
-    mint: address(mintAddress),
-    authority: signer,
-    amount: 100_000,
-    destination: address(recipientWallet),
-    tokenProgram: TOKEN_PROGRAM_ADDRESS,
-    computeUnitLimit: 40000, // Increase compute unit limit to handle ATA creation
-  });
-
-  // Sign the transaction
-  const signedTx = await signTransactionMessageWithSigners(tx);
-  const signature = getSignatureFromTransaction(signedTx);
-
-  console.log(
-    "Explorer link:",
-    getExplorerLink({ cluster, transaction: signature })
+  const recipientWallet = new PublicKey(
+    "d3xLThcDtBxjpiw9MkSbK6YyCrcc1eTrWEg2b8bFHHD"
+  );
+  const mintAddress = new PublicKey(
+    "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX"
   );
 
-  // Send and confirm
-  await sendAndConfirmTransaction(signedTx);
+  try {
+    // Get the sender's token account
+    const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      keypair,
+      mintAddress,
+      keypair.publicKey
+    );
 
-  console.log("Transfer complete.");
+    // Get the recipient's token account
+    const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      keypair,
+      mintAddress,
+      recipientWallet
+    );
+
+    // Transfer tokens
+    const signature = await transfer(
+      connection,
+      keypair,
+      senderTokenAccount.address,
+      recipientTokenAccount.address,
+      keypair,
+      100_000 // amount to transfer
+    );
+
+    console.log("✅ Transfer successful!");
+    console.log(`Transaction signature: ${signature}`);
+    console.log(
+      `Explorer link: https://explorer.solana.com/tx/${signature}?cluster=devnet`
+    );
+  } catch (error) {
+    console.error("❌ Transfer failed:", error);
+  }
 }
 
 main().catch(console.error);
