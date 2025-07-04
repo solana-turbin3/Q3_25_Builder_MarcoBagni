@@ -12,12 +12,8 @@ const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 const connection = new Connection("https://api.devnet.solana.com");
 
 async function main() {
-  const recipientWallet = new PublicKey(
-    "d3xLThcDtBxjpiw9MkSbK6YyCrcc1eTrWEg2b8bFHHD"
-  );
-  const mintAddress = new PublicKey(
-    "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX"
-  );
+  const recipientWallet = new PublicKey("RECEIPIENT_WALLET_ADDRESS");
+  const mintAddress = new PublicKey("MINT_ADDRESS");
 
   try {
     // Get the sender's token account
