@@ -1,54 +1,48 @@
 import {
-  Connection,
-  Keypair,
-  PublicKey,
-  Transaction,
-  SystemProgram,
-} from "@solana/web3.js";
-import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
-import wallet from "../wallet";
+  createSolanaClient,
+  SolanaClusterMoniker,
+  getExplorerLink,
+  address,
+  sendAndConfirmTransactionWithSignersFactory,
+} from "gill";
 
-const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
-const connection = new Connection("https://api.devnet.solana.com");
+import wallet from "../wallet";
+import dotenv from "dotenv";
+dotenv.config();
+
+const cluster: SolanaClusterMoniker = "devnet";
+const { rpc } = createSolanaClient({
+  urlOrMoniker: cluster,
+});
 
 async function main() {
-  const recipientWallet = new PublicKey("RECEIPIENT_WALLET_ADDRESS");
-  const mintAddress = new PublicKey("MINT_ADDRESS");
+  const recipientWallet = process.env["WALLET_3_ADDRESS"] || "";
+  const mintAddress = process.env["MINT_T-2_ADDRESS"] || "";
 
   try {
-    // Get the sender's token account
-    const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      keypair,
-      mintAddress,
-      keypair.publicKey
-    );
+    // Debug wallet
+    console.log("Wallet type:", typeof wallet);
+    console.log("Wallet is array:", Array.isArray(wallet));
+    console.log("Wallet length:", wallet.length);
+    console.log("First 10 bytes:", wallet.slice(0, 10));
 
-    // Get the recipient's token account
-    const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      keypair,
-      mintAddress,
-      recipientWallet
-    );
+    // Get latest blockhash
+    const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
 
-    // Transfer tokens
-    const signature = await transfer(
-      connection,
-      keypair,
-      senderTokenAccount.address,
-      recipientTokenAccount.address,
-      keypair,
-      100_000 // amount to transfer
-    );
+    console.log("✅ Gill library connected successfully!");
+    console.log(`Cluster: ${cluster}`);
+    console.log(`Recipient: ${recipientWallet}`);
+    console.log(`Mint: ${mintAddress}`);
+    console.log(`Latest blockhash: ${latestBlockhash.blockhash}`);
 
-    console.log("✅ Transfer successful!");
-    console.log(`Transaction signature: ${signature}`);
+    // Note: The gill library's createSignerFromKeyPair has compatibility issues
+    // with the current wallet format. We'll need to find an alternative approach
+    // or use a different method to create the signer.
     console.log(
-      `Explorer link: https://explorer.solana.com/tx/${signature}?cluster=devnet`
+      "Gill library is ready, but signer creation needs alternative approach!"
     );
   } catch (error) {
-    console.error("❌ Transfer failed:", error);
+    console.error("❌ Error:", error);
   }
 }
 
