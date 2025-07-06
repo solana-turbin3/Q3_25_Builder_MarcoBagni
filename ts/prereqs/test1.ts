@@ -4,9 +4,7 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-const user = new PublicKey(
-  process.env.WALLET_1_ADDRESS || "YOUR_WALLET_ADDRESS_HERE"
-);
+const user = new PublicKey(process.env.WALLET_1_ADDRESS);
 const programId = new PublicKey("TRBZyQHB3m68FGeVsqTK39Wm4xejadjVhP5MAZaKWDM");
 
 const [pda, bump] = PublicKey.findProgramAddressSync(

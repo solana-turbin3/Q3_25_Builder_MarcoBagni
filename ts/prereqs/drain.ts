@@ -17,9 +17,7 @@ dotenv.config();
 const from = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 // Turbin3 wallet
-const to = new PublicKey(
-  process.env.WALLET_1_ADDRESS || "YOUR_WALLET_ADDRESS_HERE"
-);
+const to = new PublicKey(process.env.WALLET_1_ADDRESS);
 
 // Connect to devnet
 const connection = new Connection("https://api.devnet.solana.com");

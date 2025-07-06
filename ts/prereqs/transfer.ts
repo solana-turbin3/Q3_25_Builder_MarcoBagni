@@ -17,9 +17,7 @@ dotenv.config();
 const from = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 // Define the recipient
-const to = new PublicKey(
-  process.env.WALLET_1_ADDRESS || "YOUR_WALLET_ADDRESS_HERE"
-);
+const to = new PublicKey(process.env.WALLET_2_ADDRESS);
 
 // Setup connection
 const connection = new Connection("https://api.devnet.solana.com");
