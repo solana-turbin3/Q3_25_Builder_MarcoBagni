@@ -10,9 +10,7 @@ const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 const commitment: Commitment = "confirmed";
 const connection = new Connection("https://api.devnet.solana.com", commitment);
 
-const mint = new PublicKey(
-  process.env.MINT_T_1_ADDRESS || "YOUR_MINT_ADDRESS_HERE"
-);
+const mint = new PublicKey(process.env.MINT_T_1_ADDRESS);
 
 const recipients = ["ADDRESS1", "ADDRESS2"];
 
