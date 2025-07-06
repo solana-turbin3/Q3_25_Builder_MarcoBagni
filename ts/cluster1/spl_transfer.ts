@@ -1,23 +1,33 @@
-import { Commitment, Connection, Keypair, PublicKey } from "@solana/web3.js";
-import wallet from "../wallet";
-import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
+import * as web3 from "@solana/web3.js";
+import wallet from "../wallet.ts";
 import dotenv from "dotenv";
+import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
 
 // Load environment variables
 dotenv.config();
 
-const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
+const keypair = web3.Keypair.fromSecretKey(new Uint8Array(wallet));
 
-const commitment: Commitment = "confirmed";
-const connection = new Connection("https://api.devnet.solana.com", commitment);
-
-const mint = new PublicKey(
-  process.env.MINT_T_1_ADDRESS || "YOUR_MINT_ADDRESS_HERE"
+const commitment: web3.Commitment = "confirmed";
+const connection = new web3.Connection(
+  "https://api.devnet.solana.com",
+  commitment
 );
 
-const to = new PublicKey(
-  process.env.WALLET_1_ADDRESS || "YOUR_WALLET_ADDRESS_HERE"
-);
+// Handle undefined environment variables
+const mintAddress = process.env.MINT_T_2_ADDRESS;
+const recipientAddress = process.env.WALLET_3_ADDRESS;
+
+if (!mintAddress) {
+  throw new Error("MINT_T_2_ADDRESS environment variable is not set");
+}
+
+if (!recipientAddress) {
+  throw new Error("WALLET_3_ADDRESS environment variable is not set");
+}
+
+const mint = new web3.PublicKey(mintAddress);
+const to = new web3.PublicKey(recipientAddress);
 
 (async () => {
   try {
@@ -43,7 +53,7 @@ const to = new PublicKey(
       fromWallet.address,
       toWallet.address,
       keypair.publicKey,
-      100_000n
+      4_700_000n
     );
     console.log(`Transfer successful: ${signature}`);
   } catch (e) {
