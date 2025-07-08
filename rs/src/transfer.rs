@@ -11,7 +11,7 @@ use dotenvy::dotenv;
 
 const RPC_URL: &str = "https://api.devnet.solana.com";
 
-pub fn transfer_sol() {
+pub fn main() {
     // Load your devnet keypair from file
     dotenv().ok();
     let wallet_path = env::var("WALLET_3").expect("WALLET not set");
@@ -28,7 +28,8 @@ pub fn transfer_sol() {
     }
 
     // Define recipient pubkey (replace with your target public key)
-    let to_pubkey = Pubkey::from_str(&env::var("WALLET_1_ADDRESS").unwrap_or_else(|_| "YOUR_WALLET_ADDRESS_HERE".to_string())).unwrap();
+    let to_pubkey = Pubkey::from_str(&env::var("WALLET_2_ADDRESS").unwrap())
+        .expect("Invalid WALLET_2_ADDRESS");
 
     // Create RPC client
     let rpc_client = RpcClient::new(RPC_URL.to_string());

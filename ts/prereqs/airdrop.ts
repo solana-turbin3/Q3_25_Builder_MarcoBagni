@@ -14,7 +14,7 @@ dotenv.config();
 
 //const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 const connection = new Connection("https://api.devnet.solana.com");
-const recipientAddress = process.env.WALLET_3_ADDRESS;
+const recipientAddress = process.env.WALLET_2_ADDRESS;
 
 (async () => {
   try {
