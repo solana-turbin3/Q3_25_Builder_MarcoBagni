@@ -18,8 +18,8 @@ const { rpc } = createSolanaClient({
 });
 
 async function main() {
-  const recipientWallet = process.env["WALLET_3_ADDRESS"] || "";
-  const mintAddress = process.env["MINT_T_2_ADDRESS"] || "";
+  const recipientWallet = process.env["WALLET_3_ADDRESS"];
+  const mintAddress = process.env["MINT_T_2_ADDRESS"];
 
   try {
     // Convert wallet bytes to JSON array format

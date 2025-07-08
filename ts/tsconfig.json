@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "lib": ["es2020"],
-    "module": "Node16",
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "NodeNext",
     "moduleResolution": "node16",
     "rootDir": "./",
     "resolveJsonModule": true,
@@ -11,6 +11,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["./**/*.ts"]
 }

@@ -14,3 +14,16 @@ solana-sdk = "1.17.0"
 solana-client = "1.17.0"
 solana-program = "1.17.0"
 solana-idlgen = { git = "https://github.com/deanmlittle/solana-idlgen.git" }
+
+
+[[bin]]
+name = "airdrop"
+path = "src/airdrop.rs"
+
+[[bin]]
+name = "convert"
+path = "src/convert.rs"
+
+[[bin]]
+name = "transfer"
+path = "src/transfer.rs"

@@ -7,7 +7,7 @@ import {
   sendAndConfirmTransaction,
   PublicKey,
 } from "@solana/web3.js";
-import wallet from "../wallet";
+import wallet from "../wallet.ts";
 import dotenv from "dotenv";
 
 // Load environment variables
@@ -17,7 +17,7 @@ dotenv.config();
 const from = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 // Define the recipient
-const to = new PublicKey(process.env.WALLET_2_ADDRESS);
+const to = new PublicKey(process.env.WALLET_3_ADDRESS);
 
 // Setup connection
 const connection = new Connection("https://api.devnet.solana.com");
@@ -29,7 +29,7 @@ const connection = new Connection("https://api.devnet.solana.com");
       SystemProgram.transfer({
         fromPubkey: from.publicKey,
         toPubkey: to,
-        lamports: 2 * LAMPORTS_PER_SOL,
+        lamports: 1 * LAMPORTS_PER_SOL,
       })
     );
 

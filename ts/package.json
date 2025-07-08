@@ -23,6 +23,7 @@
     "nft_metadata": "ts-node ./cluster1/nft_metadata.ts",
     "nft_mint": "ts-node ./cluster1/nft_mint.ts",
     "nft_uri": "ts-node ./cluster1/nft_uri.ts",
+    "nft_info": "ts-node ./cluster1/nft_info.ts",
     "vault_init": "ts-node ./cluster1/vault_init.ts",
     "vault_deposit": "ts-node ./cluster1/vault_deposit.ts",
     "vault_withdraw": "ts-node ./cluster1/vault_withdraw.ts",
@@ -47,11 +48,11 @@
     "dotenv": "^17.0.1",
     "gill": "^0.10.2",
     "prompt": "^1.3.0",
-    "prompt-sync": "^4.2.0",
-    "ts-node": "^10.9.1"
+    "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.12",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

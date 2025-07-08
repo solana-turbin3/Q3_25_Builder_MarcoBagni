@@ -1,6 +1,6 @@
 use bs58;
 use std::io::{self, BufRead};
-use solana_sdk::signature::{Keypair, Signer};
+use solana_sdk::signature::{Keypair};
 
 fn base58_to_wallet() {
     println!("Input your private key as a base58 string:");
@@ -47,7 +47,7 @@ fn wallet_bytes_to_pubkey() {
     println!("Your public key is:\n{}", keypair.pubkey());
 }
 
-pub fn convert_wallet() {
+pub fn main() {
     println!("Choose conversion:");
     println!("1) Base58 → Wallet bytes");
     println!("2) Wallet bytes → Base58");

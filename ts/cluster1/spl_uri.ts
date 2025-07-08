@@ -21,7 +21,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // === CONFIG ===
-const mintAddress = process.env.MINT_T_1_ADDRESS || "YOUR_MINT_ADDRESS_HERE"; // your token mint
+const mintAddress = process.env.MINT_T_1_ADDRESS; // your token mint
 const imagePath = "../img/T100.jpg"; // your logo
 const metadataName = "turbin3-100";
 const metadataSymbol = "TRB3-100";

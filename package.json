@@ -1,8 +1,8 @@
 {
-  "name": "00-solana-starter",
+  "name": "Q3_25_Builder_MarcoBagni",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/solana-turbin3/solana-starter",
+  "repository": "https://github.com/solana-turbin3/Q3_25_Builder_MarcoBagni",
   "author": "<marco@lostconversation.com>",
   "license": "MIT"
 }
