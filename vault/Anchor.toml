@@ -5,7 +5,7 @@ package_manager = "yarn"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
+[programs.devnet]
 vault = "Ej8tPv7YQqJAxuscLC8qZnWkynLZwm7QpaT5fSJxQz6Y"
 
 [registry]
