@@ -65,6 +65,8 @@ test-ledger/
 
 vault/.env
 
+**/.env
+
 /escrow_shrinat/
 
 /rock-pap-scis/
