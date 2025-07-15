@@ -6,48 +6,68 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
+  Connection,
 } from "@solana/web3.js";
 import { Escrow } from "../target/types/escrow";
 
 describe("escrow", () => {
-  const provider = anchor.getProvider();
+  // Force connection to devnet
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
+  const provider = new anchor.AnchorProvider(
+    connection,
+    anchor.getProvider().wallet,
+    { commitment: "confirmed" }
+  );
+  anchor.setProvider(provider);
+
   const program = anchor.workspace.escrow as Program<Escrow>;
   const programId = program.programId;
-  const tokenProgram = spl.TOKEN_2022_PROGRAM_ID;
+  const tokenProgram = spl.TOKEN_PROGRAM_ID; // Use regular token program
 
   console.log("RPC:", provider.connection.rpcEndpoint);
 
-  const SEED = new anchor.BN(1);
+  const SEED = new anchor.BN(Math.floor(Math.random() * 1000000));
 
-  const confirm = async (signature: string): Promise<string> => {
-    const block = await provider.connection.getLatestBlockhash();
-    await provider.connection.confirmTransaction({ signature, ...block });
-    return signature;
-  };
+  // Custom token addresses (replace with your actual base58 addresses)
+  const MINT_A_ADDRESS = "AWJPoHZMzLRxzbw3mtbZjAwWSxqvGpUjGNL676LFLeb2";
+  const MINT_B_ADDRESS = "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX";
 
-  const log = async (signature: string): Promise<string> => {
-    console.log(
-      `Your transaction signature: https://explorer.solana.com/transaction/${signature}?cluster=localnet`
-    );
-    return signature;
-  };
+  // Custom taker address (replace with actual taker's wallet address)
+  const TAKER_ADDRESS = "d3xLThcDtBxjpiw9MkSbK6YyCrcc1eTrWEg2b8bFHHD";
 
-  const [maker, taker, mintA, mintB] = Array.from({ length: 4 }, () =>
-    Keypair.generate()
+  // Use your wallet as maker (from Anchor.toml)
+  const maker = provider.wallet.payer;
+  const taker = new PublicKey(TAKER_ADDRESS);
+  const mintA = new PublicKey(MINT_A_ADDRESS);
+  const mintB = new PublicKey(MINT_B_ADDRESS);
+
+  const makerAtaA = spl.getAssociatedTokenAddressSync(
+    mintA,
+    maker.publicKey,
+    false,
+    tokenProgram
   );
-
-  const [makerAtaA, makerAtaB, takerAtaA, takerAtaB] = [maker, taker]
-    .map((a) =>
-      [mintA, mintB].map((m) =>
-        spl.getAssociatedTokenAddressSync(
-          m.publicKey,
-          a.publicKey,
-          false,
-          tokenProgram
-        )
-      )
-    )
-    .flat();
+  const makerAtaB = spl.getAssociatedTokenAddressSync(
+    mintB,
+    maker.publicKey,
+    false,
+    tokenProgram
+  );
+  const takerAtaA = spl.getAssociatedTokenAddressSync(
+    mintA,
+    taker,
+    false,
+    tokenProgram
+  );
+  const takerAtaB = spl.getAssociatedTokenAddressSync(
+    mintB,
+    taker,
+    false,
+    tokenProgram
+  );
 
   const escrow = PublicKey.findProgramAddressSync(
     [
@@ -59,7 +79,7 @@ describe("escrow", () => {
   )[0];
 
   const vault = spl.getAssociatedTokenAddressSync(
-    mintA.publicKey,
+    mintA,
     escrow,
     true,
     tokenProgram
@@ -67,9 +87,9 @@ describe("escrow", () => {
 
   const accounts = {
     maker: maker.publicKey,
-    taker: taker.publicKey,
-    mintA: mintA.publicKey,
-    mintB: mintB.publicKey,
+    taker: taker,
+    mintA: mintA,
+    mintB: mintB,
     makerAtaA,
     makerAtaB,
     takerAtaA,
@@ -79,78 +99,45 @@ describe("escrow", () => {
     tokenProgram,
   };
 
-  it("Airdrop & create mint", async () => {
-    const lamports = await spl.getMinimumBalanceForRentExemptMint(
-      provider.connection as any
-    );
-
+  it("Setup accounts", async () => {
     const tx = new anchor.web3.Transaction();
 
-    // Transfer 1 SOL to maker and taker
-    tx.instructions.push(
-      ...[maker, taker].map((a) =>
-        SystemProgram.transfer({
-          fromPubkey: provider.publicKey,
-          toPubkey: a.publicKey,
-          lamports: 1 * LAMPORTS_PER_SOL,
-        })
-      )
-    );
-
-    // Create mintA and mintB
-    tx.instructions.push(
-      ...[mintA, mintB].map((m) =>
-        SystemProgram.createAccount({
-          fromPubkey: provider.publicKey,
-          newAccountPubkey: m.publicKey,
-          lamports,
-          space: spl.MINT_SIZE,
-          programId: tokenProgram,
-        })
-      )
-    );
-
-    // Init mints, create ATAs, and mint tokens
+    // Create ATAs for maker and taker
     tx.instructions.push(
       ...[
-        { mint: mintA.publicKey, authority: maker.publicKey, ata: makerAtaA },
-        { mint: mintB.publicKey, authority: taker.publicKey, ata: takerAtaB },
-      ].flatMap((x) => [
-        spl.createInitializeMint2Instruction(
-          x.mint,
-          6,
-          x.authority,
-          null,
-          tokenProgram
-        ),
+        { mint: mintA, authority: maker.publicKey, ata: makerAtaA },
+        { mint: mintB, authority: maker.publicKey, ata: makerAtaB },
+        { mint: mintA, authority: taker, ata: takerAtaA },
+        { mint: mintB, authority: taker, ata: takerAtaB },
+      ].map((x) =>
         spl.createAssociatedTokenAccountIdempotentInstruction(
           provider.publicKey,
           x.ata,
           x.authority,
           x.mint,
           tokenProgram
-        ),
-        spl.createMintToInstruction(
-          x.mint,
-          x.ata,
-          x.authority,
-          1e9,
-          undefined,
-          tokenProgram
-        ),
-      ])
+        )
+      )
     );
 
-    await provider
-      .sendAndConfirm(tx, [provider.wallet.payer, maker, taker, mintA, mintB])
-      .then(log);
+    await provider.sendAndConfirm(tx, [provider.wallet.payer]).then(log);
   });
 
   it("Make", async () => {
     await program.methods
-      .make(SEED, new anchor.BN(1e6), new anchor.BN(1e6))
+      .make(SEED, new anchor.BN(50000), new anchor.BN(5000000)) // 0.05 Token A for 5 Token B
       .accounts({ ...accounts })
       .signers([maker])
+      .rpc()
+      .then(confirm)
+      .then(log);
+  });
+
+  it("Take", async () => {
+    await program.methods
+      .take()
+      .accounts({ ...accounts })
+      .signers([provider.wallet.payer])
       .rpc()
       .then(confirm)
       .then(log);
@@ -166,13 +153,19 @@ describe("escrow", () => {
       .then(log);
   });
 
-  it("Take", async () => {
-    await program.methods
-      .take()
-      .accounts({ ...accounts })
-      .signers([taker])
-      .rpc()
-      .then(confirm)
-      .then(log);
-  });
+  // Note: Take test removed because taker needs to sign separately
+  // The taker would need to run their own transaction to complete the swap
+
+  const confirm = async (signature: string): Promise<string> => {
+    const block = await provider.connection.getLatestBlockhash();
+    await provider.connection.confirmTransaction({ signature, ...block });
+    return signature;
+  };
+
+  const log = async (signature: string): Promise<string> => {
+    console.log(
+      `Your transaction signature: https://explorer.solana.com/transaction/${signature}?cluster=devnet`
+    );
+    return signature;
+  };
 });

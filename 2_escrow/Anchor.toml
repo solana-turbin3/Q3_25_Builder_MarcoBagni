@@ -8,12 +8,17 @@ skip-lint = false
 [programs.localnet]
 escrow = "DzHecQ3KDv5q9jjpEYhAzgjGuwXNkzwuiZKXt5LKVkym"
 
+[programs.devnet]
+escrow = "DzHecQ3KDv5q9jjpEYhAzgjGuwXNkzwuiZKXt5LKVkym"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
-wallet = "~/.config/solana/d1x.json"
+cluster = "devnet"
+wallet = "~/.config/solana/d3x.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+make = "ts-node scripts/make.ts"
+take = "ts-node scripts/take.ts"
