@@ -10,6 +10,58 @@ A simple yet secure vault program built on Solana using the Anchor framework. Th
 - **Rent Exemption**: Automatically handles rent exemption for vault accounts
 - **TypeScript Integration**: Full TypeScript support with Anchor client
 
+## 📋 How It Works (For Non-Coders)
+
+Think of this like a digital bank vault system with advanced security. Here's what happens:
+
+### 🎭 The Players
+
+```
+┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
+         👤 YOU                          🔐 PROGRAM                         🏦 VAULT
+
+      • Your wallet        ◄──►       • Controls             ◄──►      • Holds your
+      • Your SOL                       everything                       deposited SOL
+      • Your keys                     • Validates                      • Program owns
+                                      • Enforces                       • Secure PDA
+└─────────────────────────┘      └─────────────────────────┘      └─────────────────────────┘
+                                              │
+                                              │
+                                 ┌─────────────────────────┐
+                                       📊 VAULT STATE
+
+                                      • Tracks info
+                                      • Security codes
+                                      • Bump seeds
+                                 └─────────────────────────┘
+```
+
+### 🔐 PDA Security (Program Derived Addresses)
+
+- **Vault State**: `[b"state", your_wallet]` → Unique per user
+- **Vault Account**: `[b"vault", vault_state]` → Unique per vault
+
+### The Process & State Changes:
+
+1. **Initialize Vault**:
+
+   - Creates VaultState account (stores bump seeds)
+   - Creates Vault account (holds SOL)
+   - Transfers rent exemption to vault
+   - **State**: User wallet → Vault account (rent amount)
+
+2. **Deposit SOL**:
+
+   - Transfers SOL from user wallet to vault
+   - **State**: User wallet → Vault account (deposit amount)
+
+3. **Withdraw SOL**:
+   - Program validates you own the vault
+   - Transfers SOL from vault to your wallet
+   - **State**: Vault account → User wallet (withdraw amount)
+
+**Security**: Only you can withdraw - the program checks your signature and vault ownership automatically!
+
 ## 📁 Project Structure
 
 ```
@@ -132,6 +184,17 @@ const tx = await program.methods.withdraw(amount).rpc();
 | `withdraw.ts`    | Withdraw SOL from vault | `yarn withdraw`    |
 | `list-vaults.ts` | Check vault status      | `yarn list-vaults` |
 
+## ⚠️ Important Notes
+
+- **Wallet Configuration**: Ensure your Solana wallet is properly configured
+- **Network**: Currently configured for Devnet
+- **Gas Fees**: All transactions require SOL for gas fees
+- **Security**: Only vault owners can withdraw funds
+
 ## 🤝 Contributing
 
 Thanks to colleague [Priyanash Patel](https://github.com/priyanshpatel18/Q3_25_Builder_priyanshpatel18) for the rust side
+
+---
+
+**Built with ❤️ using Anchor Framework**

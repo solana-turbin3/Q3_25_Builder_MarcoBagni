@@ -11,32 +11,20 @@ use crate::states::Escrow;
 
 #[derive(Accounts)]
 pub struct Refund<'info> {
-    /// The original escrow creator requesting refund of their tokens.
-    /// Must be mutable to receive refunded tokens and rent.
     #[account(mut)]
-    pub maker: Signer<'info>,
+    pub maker: Signer<'info>, // The original escrow creator requesting refund of their tokens
 
-    /// Token mint for the escrowed asset (Token A).
-    /// Must match the mint stored in escrow state.
-    #[account(
-        mint::token_program = token_program
-    )]
-    pub mint_a: InterfaceAccount<'info, Mint>,
+    #[account(mint::token_program = token_program)]
+    pub mint_a: InterfaceAccount<'info, Mint>, // Token mint for the escrowed asset (Token A)
 
-    /// Maker's token account to receive refunded Token A.
-    /// Must be the same account that originally funded the escrow.
     #[account(
         mut,
         associated_token::mint = mint_a,
         associated_token::authority = maker,
         associated_token::token_program = token_program
     )]
-    pub maker_ata_a: InterfaceAccount<'info, TokenAccount>,
+    pub maker_ata_a: InterfaceAccount<'info, TokenAccount>, // Maker's token account to receive refunded Token A
 
-    /// Escrow state account to be closed after refund.
-    /// - Validates maker identity and token mint match stored values
-    /// - Rent is returned to maker upon closing
-    /// - Uses stored bump for PDA verification
     #[account(
         mut,
         close = maker,
@@ -45,17 +33,15 @@ pub struct Refund<'info> {
         seeds = [b"escrow", maker.key().as_ref(), escrow.seed.to_le_bytes().as_ref()],
         bump = escrow.bump,
     )]
-    pub escrow: Account<'info, Escrow>,
+    pub escrow: Account<'info, Escrow>, // Escrow state account to be closed after refund
 
-    /// Vault holding escrowed Token A to be refunded.
-    /// Will be emptied and closed during refund process.
     #[account(
         mut,
         associated_token::mint = mint_a,
         associated_token::authority = escrow,
         associated_token::token_program = token_program    
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: InterfaceAccount<'info, TokenAccount>, // Vault holding escrowed Token A to be refunded
 
     pub token_program: Interface<'info, TokenInterface>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -63,13 +49,8 @@ pub struct Refund<'info> {
 }
 
 impl<'info> Refund<'info> {
-    /// Refunds all escrowed tokens to maker and closes the vault.
-    /// 
-    /// Returns the entire vault balance to the original maker,
-    /// effectively canceling the escrow and cleaning up accounts.
-    pub fn refund_and_close_vault(&mut self) -> Result<()> {
-        // Create PDA signer seeds for vault authority
-        let signer_seeds: &[&[&[u8]]; 1] = &[&[
+    pub fn refund_and_close_vault(&mut self) -> Result<()> { // Refunds all escrowed tokens to maker and closes the vault
+        let signer_seeds: &[&[&[u8]]; 1] = &[&[ // Create PDA signer seeds for vault authority
             b"escrow", 
             self.maker.key.as_ref(), 
             &self.escrow.seed.to_le_bytes()[..],
@@ -88,11 +69,9 @@ impl<'info> Refund<'info> {
 
         let cpi_context = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
 
-        // Return all escrowed tokens to maker
-        transfer_checked(cpi_context, self.vault.amount, decimals)?;
+        transfer_checked(cpi_context, self.vault.amount, decimals)?; // Return all escrowed tokens to maker
 
-        // Close vault account and refund rent to maker
-        let close_accounts = CloseAccount {
+        let close_accounts = CloseAccount { // Close vault account and refund rent to maker
             account: self.vault.to_account_info(),
             destination: self.maker.to_account_info(),
             authority: self.escrow.to_account_info(),
