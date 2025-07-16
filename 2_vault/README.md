@@ -10,18 +10,16 @@ A simple yet secure vault program built on Solana using the Anchor framework. Th
 - **Rent Exemption**: Automatically handles rent exemption for vault accounts
 - **TypeScript Integration**: Full TypeScript support with Anchor client
 
-## 📋 How It Works (For Non-Coders)
+## 📋 How It Works
 
 Think of this like a digital bank vault system with advanced security. Here's what happens:
-
-### 🎭 The Players
 
 ```
 ┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
          👤 YOU                          🔐 PROGRAM                         🏦 VAULT
 
       • Your wallet        ◄──►       • Controls             ◄──►      • Holds your
-      • Your SOL                       everything                       deposited SOL
+      • Your SOL                        everything                       deposited SOL
       • Your keys                     • Validates                      • Program owns
                                       • Enforces                       • Secure PDA
 └─────────────────────────┘      └─────────────────────────┘      └─────────────────────────┘
