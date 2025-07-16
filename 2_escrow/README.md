@@ -1,147 +1,125 @@
-# Solana Escrow Program
+# 🔄 Solana Escrow Program
 
-A secure, decentralized escrow system built on Solana using the Anchor framework. This program enables trustless token swaps between two parties without requiring intermediaries.
+A secure, decentralized escrow system built on Solana using the Anchor framework. This program enables trustless token swaps between two parties with **custom token support** - you can use any SPL tokens as Token A and Token B!
 
-## Overview
+## 🚀 Features
 
-The escrow program facilitates atomic token swaps by:
-1. **Maker** deposits Token A into escrow and specifies the amount of Token B they want in return
-2. **Taker** can complete the trade by providing Token B and receiving Token A
-3. **Maker** can refund their escrowed tokens if no trade occurs
-
-## Features
-
-- **Trustless Trading**: No intermediaries required
+- **Custom Token Support**: Use any SPL tokens - Token A and Token B can be completely different tokens
+- **Trustless Trading**: No intermediaries required for secure token swaps
 - **Atomic Swaps**: Either both parties get their tokens or the transaction fails
-- **Token-2022 Support**: Compatible with both SPL Token and Token-2022 programs
-- **Secure PDAs**: Uses Program Derived Addresses for vault authority
+- **PDA-based Security**: Uses Program Derived Addresses for vault authority
 - **Rent Optimization**: Automatically closes accounts and refunds rent
-- **Decimal Validation**: Uses `transfer_checked` for enhanced security
+- **TypeScript Integration**: Full TypeScript support with Anchor client
 
-## Program Structure
+## 📁 Project Structure
 
-### Instructions
-
-#### `make(seed: u64, amount: u64, receive: u64)`
-Creates an escrow and deposits tokens from the maker.
-
-**Parameters:**
-- `seed`: Unique identifier for the escrow (allows multiple escrows per maker)
-- `amount`: Amount of Token A to deposit into escrow
-- `receive`: Amount of Token B expected in return
-
-**Accounts:**
-- `maker`: Escrow creator (signer, mutable)
-- `mint_a`: Token mint for deposited asset
-- `mint_b`: Token mint for expected return asset
-- `maker_ata_a`: Maker's Token A account
-- `escrow`: Escrow state account (PDA)
-- `vault`: Token A vault account (PDA)
-
-#### `take()`
-Completes the escrow trade by swapping tokens.
-
-**Process:**
-1. Taker sends Token B to maker
-2. Escrowed Token A is transferred to taker
-3. Vault and escrow accounts are closed
-
-**Accounts:**
-- `taker`: Trade counterparty (signer, mutable)
-- `maker`: Original escrow creator (mutable)
-- `mint_a` & `mint_b`: Token mints
-- `taker_ata_b`: Taker's Token B account
-- `maker_ata_b`: Maker's Token B account (created if needed)
-- `taker_ata_a`: Taker's Token A account (created if needed)
-- `escrow`: Escrow state account
-- `vault`: Token A vault account
-
-#### `refund()`
-Allows maker to reclaim their escrowed tokens.
-
-**Process:**
-1. All escrowed Token A is returned to maker
-2. Vault and escrow accounts are closed
-
-**Accounts:**
-- `maker`: Original escrow creator (signer, mutable)
-- `mint_a`: Token mint for escrowed asset
-- `maker_ata_a`: Maker's Token A account
-- `escrow`: Escrow state account
-- `vault`: Token A vault account
-
-### State Account
-
-#### `Escrow`
-Stores trade parameters and metadata:
-
-```rust
-pub struct Escrow {
-    pub seed: u64,           // Unique identifier
-    pub maker: Pubkey,       // Escrow creator
-    pub mint_a: Pubkey,      // Deposited token mint
-    pub mint_b: Pubkey,      // Expected token mint
-    pub receive: u64,        // Expected Token B amount
-    pub bump: u8,            // PDA bump seed
-}
+```
+2_escrow/
+├── programs/escrow/         # Solana program (Rust)
+│   └── src/
+│       ├── lib.rs          # Main program logic
+│       ├── instructions/    # Program instructions
+│       └── states/         # Account structures
+├── scripts/                 # TypeScript interaction scripts
+│   ├── make.ts             # Create escrow
+│   └── take.ts             # Complete trade
+├── tests/                  # Test files
+├── migrations/             # Deployment scripts
+└── Anchor.toml            # Anchor configuration
 ```
 
-## Security Features
+## 🛠️ Prerequisites
 
-### PDA Authority
-- Vault accounts are owned by the escrow PDA
-- Prevents unauthorized token access
-- Uses deterministic address derivation
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [Rust](https://rustup.rs/)
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)
+- [Anchor CLI](https://book.anchor-lang.com/getting-started/installation.html)
 
-### Validation Constraints
-- **Token Program Compatibility**: Validates mints work with specified token program
-- **Account Ownership**: Ensures associated token accounts belong to correct authorities
-- **Mint Matching**: Verifies token mints match escrow expectations
-- **Maker Identity**: Confirms only original maker can refund
+## ⚡ Quick Start
 
-### Transfer Safety
-- Uses `transfer_checked` for decimal validation
-- Prevents precision errors and token mint mismatches
-- Atomic operations ensure transaction integrity
+### 1. Install Dependencies
 
-## Usage Example
+```bash
+yarn install
+```
 
-### Setup
+### 2. Build the Program
+
+```bash
+anchor build
+```
+
+### 3. Deploy to Devnet
+
+```bash
+anchor deploy
+```
+
+### 4. Create an Escrow
+
+```bash
+yarn make
+```
+
+### 5. Complete a Trade
+
+```bash
+yarn take
+```
+
+### 6. Run Tests
+
+```bash
+yarn test
+```
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+yarn test
+```
+
+## 🏗️ Architecture
+
+### Core Components
+
+1. **Escrow**: Stores trade parameters and metadata
+2. **Make**: Creates escrow and deposits Token A
+3. **Take**: Completes trade by swapping tokens
+4. **Refund**: Allows maker to reclaim tokens
+
+### Security Features
+
+- **PDA-based Accounts**: All escrows use Program Derived Addresses
+- **Custom Token Support**: Works with any SPL tokens (Token A ≠ Token B)
+- **Signer Validation**: Only authorized parties can execute operations
+- **Transfer Safety**: Uses `transfer_checked` for decimal validation
+
+## 📝 Usage Examples
+
+### Create an Escrow
+
 ```typescript
 const SEED = new anchor.BN(1);
-const DEPOSIT_AMOUNT = new anchor.BN(1e6);  // 1 Token A
-const RECEIVE_AMOUNT = new anchor.BN(1e6);  // 1 Token B
+const DEPOSIT_AMOUNT = new anchor.BN(500000); // 0.5 Token A
+const RECEIVE_AMOUNT = new anchor.BN(1000000); // 1 Token B
 
-// Derive escrow PDA
-const escrow = PublicKey.findProgramAddressSync(
-  [
-    Buffer.from("escrow"),
-    maker.publicKey.toBuffer(),
-    SEED.toArrayLike(Buffer, "le", 8)
-  ],
-  programId
-)[0];
-```
-
-### Create Escrow
-```typescript
 await program.methods
   .make(SEED, DEPOSIT_AMOUNT, RECEIVE_AMOUNT)
   .accounts({
     maker: maker.publicKey,
     mintA: mintA.publicKey,
     mintB: mintB.publicKey,
-    makerAtaA: makerAtaA,
-    escrow: escrow,
-    vault: vault,
-    tokenProgram: TOKEN_2022_PROGRAM_ID,
-    // ... other required accounts
+    // ... other accounts
   })
   .signers([maker])
   .rpc();
 ```
 
-### Complete Trade
+### Complete a Trade
+
 ```typescript
 await program.methods
   .take()
@@ -157,6 +135,7 @@ await program.methods
 ```
 
 ### Refund Escrow
+
 ```typescript
 await program.methods
   .refund()
@@ -169,64 +148,96 @@ await program.methods
   .rpc();
 ```
 
-## Testing
+## 📃 Scripts Overview
 
-The program includes comprehensive tests covering:
-- Escrow creation and token deposit
-- Successful trade completion
-- Refund functionality
-- Error handling and edge cases
+| Script    | Purpose        | Usage       |
+| --------- | -------------- | ----------- |
+| `make.ts` | Create escrow  | `yarn make` |
+| `take.ts` | Complete trade | `yarn take` |
+| `test`    | Run test suite | `yarn test` |
 
-Run tests with:
-```bash
-anchor test
+## 🎯 Custom Token Implementation
+
+**The escrow program supports any SPL tokens!** Here's how easy it is to use custom tokens:
+
+### 1. Define Your Tokens
+
+```typescript
+// Use any SPL token mints
+const MINT_A_ADDRESS = "YourTokenAMintAddress";
+const MINT_B_ADDRESS = "YourTokenBMintAddress";
 ```
-## Deployment Information
+
+### 2. Create Escrow
+
+```typescript
+// Deposit any amount of Token A
+const depositAmount = new anchor.BN(1000000); // 1 Token A
+const receiveAmount = new anchor.BN(500000); // 0.5 Token B
+
+const mintA = new PublicKey(MINT_A_ADDRESS);
+const mintB = new PublicKey(MINT_B_ADDRESS);
+
+await program.methods
+  .make(seed, depositAmount, receiveAmount)
+  .accounts({
+    mintA: mintA,
+    mintB: mintB,
+    // ... other accounts
+  })
+  .rpc();
+```
+
+### 3. Complete Trade
+
+```typescript
+// Taker provides Token B, receives Token A
+await program.methods
+  .take()
+  .accounts({
+    mintA: mintA,
+    mintB: mintB,
+    // ... other accounts
+  })
+  .rpc();
+```
+
+**That's it!** The program automatically handles different token decimals, creates associated token accounts, and ensures atomic swaps.
+
+## 📊 Program State
+
+```rust
+pub struct Escrow {
+    pub seed: u64,           // Unique identifier
+    pub maker: Pubkey,       // Escrow creator
+    pub mint_a: Pubkey,      // Deposited token mint
+    pub mint_b: Pubkey,      // Expected token mint
+    pub receive: u64,        // Expected Token B amount
+    pub bump: u8,            // PDA bump seed
+}
+```
+
+## 🚀 Deployment
 
 ### Devnet
-- **Program ID**: [`ABagojQQU4h1roF1U2ZC2vqvMVrWcBx2gCq1Gy95KEvJ`](https://explorer.solana.com/address/ABagojQQU4h1roF1U2ZC2vqvMVrWcBx2gCq1Gy95KEvJ?cluster=devnet)
 
-### Example Transactions
+- **Program ID**: `DzHecQ3KDv5q9jjpEYhAzgjGuwXNkzwuiZKXt5LKVkym`
 
-The following transactions demonstrate the complete vault lifecycle on devnet:
+### Build & Deploy
 
-**Airdrop and Mint:**
-[`3J7RzjzbTmureXCsM5zy111nYfeZ54i9pGgshu3CvtDnrgsdfU6v6aAbMVmDemzp7r3RponM2WhUwuonppsxKJq8`](https://explorer.solana.com/transaction/3J7RzjzbTmureXCsM5zy111nYfeZ54i9pGgshu3CvtDnrgsdfU6v6aAbMVmDemzp7r3RponM2WhUwuonppsxKJq8?cluster=devnet)
-
-**Make Escrow:**
-[`5iu4AiXVACWzqsNnCJdBU9bE8qZKPMmAwiKKmWBgRcFJM2rF9WygTLob71biQaD77PVG7A5H8GhAMusfGT1i9QTX`](https://explorer.solana.com/transaction/5iu4AiXVACWzqsNnCJdBU9bE8qZKPMmAwiKKmWBgRcFJM2rF9WygTLob71biQaD77PVG7A5H8GhAMusfGT1i9QTX?cluster=devnet)  
-
-**Take Trade:**
-[`3Hxz72pV64RMUx49hfNyznieRKsgni54ZtS8o6iEkhCxiDaVMjZ1qzvQjEjsJZr8fBYqgTm8YpKaT9J9x5QWqanA`](https://explorer.solana.com/transaction/3Hxz72pV64RMUx49hfNyznieRKsgni54ZtS8o6iEkhCxiDaVMjZ1qzvQjEjsJZr8fBYqgTm8YpKaT9J9x5QWqanA?cluster=devnet)
-
-## Development
-
-### Build
 ```bash
 anchor build
-```
-
-### Deploy
-```bash
 anchor deploy
 ```
 
-### Test
-```bash
-anchor test
-```
+## ⚠️ Important Notes
 
-## Architecture Benefits
+- **Custom Tokens**: Token A and Token B can be completely different SPL tokens
+- **Wallet Configuration**: Ensure your Solana wallet is properly configured
+- **Network**: Currently configured for Devnet
+- **Gas Fees**: All transactions require SOL for gas fees
+- **Security**: Only authorized parties can execute operations
 
-1. **No Counterparty Risk**: Tokens are held by program PDAs, not individuals
-2. **Composability**: Can be integrated with other DeFi protocols
-3. **Cost Efficient**: Minimal rent usage with automatic account cleanup
-4. **Upgradeable**: Built with Anchor's upgrade patterns in mind
+## 🤝 Contributing
 
-## License
-
-This program is provided as-is for educational and development purposes. Use at your own risk in production environments.
-
-## Contributing
-
-Contributions are welcome! Please ensure all tests pass and follow Rust/Anchor best practices.
+This program is provided as-is for educational and development purposes.

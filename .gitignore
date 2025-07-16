@@ -67,8 +67,13 @@ vault/.env
 
 **/.env
 
+/1_ts/cluster1/spl_transfer.ts
+/1_ts/prereqs/airdrop.ts
+
+/amm
 /escrow_3
 /escrow_2
 /escrow_1
+/3_staking
 
 /rock-pap-scis/
