@@ -240,4 +240,4 @@ anchor deploy
 
 ## 🤝 Contributing
 
-This program is provided as-is for educational and development purposes.
+Thanks to colleague [Priyanash Patel](https://github.com/priyanshpatel18/Q3_25_Builder_priyanshpatel18) for the rust side
