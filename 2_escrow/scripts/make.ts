@@ -35,34 +35,34 @@ async function makeEscrow() {
   // Known addresses
   const makerAddress = "d1x4XoJobBcJAzWoNK2p5AB4aYkmnibdifkReiQi8rT";
   const takerAddress = "d3xLThcDtBxjpiw9MkSbK6YyCrcc1eTrWEg2b8bFHHD";
-  const mintA = "AWJPoHZMzLRxzbw3mtbZjAwWSxqvGpUjGNL676LFLeb2";
-  const mintB = "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX";
+  const MINT_A_ADDRESS = "AWJPoHZMzLRxzbw3mtbZjAwWSxqvGpUjGNL676LFLeb2";
+  const MINT_B_ADDRESS = "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX";
 
   const maker = devnetProvider.wallet; // Use the provider's wallet
   const taker = new PublicKey(takerAddress);
-  const mintAPubkey = new PublicKey(mintA);
-  const mintBPubkey = new PublicKey(mintB);
+  const mintA = new PublicKey(MINT_A_ADDRESS);
+  const mintB = new PublicKey(MINT_B_ADDRESS);
 
   const makerAtaA = spl.getAssociatedTokenAddressSync(
-    mintAPubkey,
+    mintA,
     maker.publicKey,
     false,
     tokenProgram
   );
   const makerAtaB = spl.getAssociatedTokenAddressSync(
-    mintBPubkey,
+    mintB,
     maker.publicKey,
     false,
     tokenProgram
   );
   const takerAtaA = spl.getAssociatedTokenAddressSync(
-    mintAPubkey,
+    mintA,
     taker,
     false,
     tokenProgram
   );
   const takerAtaB = spl.getAssociatedTokenAddressSync(
-    mintBPubkey,
+    mintB,
     taker,
     false,
     tokenProgram
@@ -78,7 +78,7 @@ async function makeEscrow() {
   )[0];
 
   const vault = spl.getAssociatedTokenAddressSync(
-    mintAPubkey,
+    mintA,
     escrow,
     true,
     tokenProgram
@@ -87,8 +87,8 @@ async function makeEscrow() {
   const accounts = {
     maker: maker.publicKey,
     taker: taker,
-    mintA: mintAPubkey,
-    mintB: mintBPubkey,
+    mintA: mintA,
+    mintB: mintB,
     makerAtaA,
     makerAtaB,
     takerAtaA,
