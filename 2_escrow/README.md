@@ -2,6 +2,60 @@
 
 A secure, decentralized escrow system built on Solana using the Anchor framework. This program enables trustless token swaps between two parties with **custom token support** - you can use any SPL tokens as Token A and Token B!
 
+## 📋 How It Works
+
+A digital escrow service that holds token A safely until Taker sends token B to Maker.
+
+### 🎭 The Players
+
+```
+┌────────────────────────┐      ┌────────────────────────┐      ┌────────────────────────┐
+      👤 MAKER                         🔐 PROGRAM                        👤 TAKER
+
+   • Creates escrow        ◄──►      • Controls            ◄──►     • Provides Token B
+   • Sets trade terms                  everything                   • Receives Token A
+   • Deposits Token A                • Validates                    • Completes trade
+   • Can refund                      • Enforces
+└────────────────────────┘      └────────────────────────┘      └────────────────────────┘
+                                            │
+                                            │
+                                ┌────────────────────────┐
+                                    🔒 ESCROW VAULT
+
+                                     • Holds Token A
+                                     • Program owns
+                                     • Secure PDA
+                                └────────────────────────┘
+```
+
+### 🔐 PDA Security (Program Derived Addresses)
+
+- **Escrow State**: `[b"escrow", maker_wallet, seed]` → Unique per escrow
+- **Escrow Vault**: `[b"vault", escrow_state]` → Holds deposited Token A
+
+### The Process & State Changes:
+
+1. **Make Escrow** (Maker creates trade):
+
+   - Maker deposits Token A into vault
+   - Program creates escrow state (stores trade terms)
+   - **State**: Maker wallet → Escrow vault (Token A amount)
+
+2. **Take Trade** (Taker completes swap):
+
+   - Taker sends Token B to maker
+   - Program transfers Token A from vault to taker
+   - Program closes vault and escrow accounts
+   - **State**: Taker wallet → Maker wallet (Token B) + Vault → Taker wallet (Token A)
+
+3. **Refund** (Maker cancels trade):
+
+   - Program returns all Token A to maker
+   - Program closes vault and escrow accounts
+   - **State**: Vault → Maker wallet (all Token A)
+
+**Security**: Only the maker can refund, and only when both parties agree does the trade complete atomically!
+
 ## 🚀 Features
 
 - **Custom Token Support**: Use any SPL tokens - Token A and Token B can be completely different tokens
