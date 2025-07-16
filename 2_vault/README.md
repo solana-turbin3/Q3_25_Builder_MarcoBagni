@@ -2,6 +2,29 @@
 
 A simple yet secure vault program built on Solana using the Anchor framework. This program allows users to deposit and withdraw SOL tokens with proper account validation and security measures.
 
+## 📋 How It Works
+
+Think of this like a digital bank vault system with advanced security. Here's what happens:
+
+```
+┌────────────────────────┐       ┌────────────────────────┐       ┌────────────────────────┐
+         👤 YOU                          🔐 PROGRAM                         🏦 VAULT
+
+      • Your wallet        ◄──►       • Controls            ◄──►       • Holds your
+      • Your SOL                        everything                       deposited SOL
+      • Your keys                     • Validates                      • Program owns
+                                      • Enforces                       • Secure PDA
+└────────────────────────┘       └────────────────────────┘       └────────────────────────┘
+                                              │
+                                              │
+                                 ┌────────────────────────┐
+
+                                      • Tracks info
+                                      • Security codes
+                                      • Bump seeds
+                                 └─────────────────────────┘
+```
+
 ## 🚀 Features
 
 - **Secure Deposits**: Users can deposit SOL into their personal vault
@@ -9,30 +32,6 @@ A simple yet secure vault program built on Solana using the Anchor framework. Th
 - **PDA-based Security**: Uses Program Derived Addresses (PDAs) for secure account management
 - **Rent Exemption**: Automatically handles rent exemption for vault accounts
 - **TypeScript Integration**: Full TypeScript support with Anchor client
-
-## 📋 How It Works
-
-Think of this like a digital bank vault system with advanced security. Here's what happens:
-
-```
-┌────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
-         👤 YOU                          🔐 PROGRAM                         🏦 VAULT
-
-      • Your wallet        ◄──►       • Controls             ◄──►      • Holds your
-      • Your SOL                        everything                       deposited SOL
-      • Your keys                     • Validates                      • Program owns
-                                      • Enforces                       • Secure PDA
-└─────────────────────────┘      └─────────────────────────┘      └─────────────────────────┘
-                                              │
-                                              │
-                                 ┌─────────────────────────┐
-                                       📊 VAULT STATE
-
-                                      • Tracks info
-                                      • Security codes
-                                      • Bump seeds
-                                 └─────────────────────────┘
-```
 
 ### 🔐 PDA Security (Program Derived Addresses)
 
