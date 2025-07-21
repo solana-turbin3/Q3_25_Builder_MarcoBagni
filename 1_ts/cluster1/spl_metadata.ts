@@ -1,7 +1,8 @@
-import wallet from "../wallet";
+import wallet from "../wallet.ts";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import {
   createMetadataAccountV3,
+  findMetadataPda,
   CreateMetadataAccountV3InstructionAccounts,
   CreateMetadataAccountV3InstructionArgs,
   DataV2Args,
@@ -17,28 +18,29 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-// Define our Mint address
-const mint = publicKey(
-  process.env.MINT_T_1_ADDRESS || "YOUR_MINT_ADDRESS_HERE"
-);
+// Define Mint address
+const mint = publicKey("9DQhaRJtV1zR5B4Y97khTWMu8WbJZYAL7tKJkT7pQPcC");
 
-// Create a UMI connection
+// Set up UMI
 const umi = createUmi("https://api.devnet.solana.com");
 const keypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(wallet));
 const signer = createSignerFromKeypair(umi, keypair);
-umi.use(signerIdentity(createSignerFromKeypair(umi, keypair)));
+umi.use(signerIdentity(signer));
 
 (async () => {
   try {
-    // Start here
-    let accounts: CreateMetadataAccountV3InstructionAccounts = {
+    const metadata = findMetadataPda(umi, { mint });
+
+    const accounts: CreateMetadataAccountV3InstructionAccounts = {
       mint,
+      metadata,
       mintAuthority: signer,
+      payer: signer,
     };
 
-    let data: DataV2Args = {
-      name: "turbin3 100",
-      symbol: "TRB3-100",
+    const data: DataV2Args = {
+      name: "LP-MarcOlistic",
+      symbol: "LP-TRB-MarcOlistic",
       uri: "https://aerwave.io",
       sellerFeeBasisPoints: 1,
       creators: [
@@ -52,19 +54,19 @@ umi.use(signerIdentity(createSignerFromKeypair(umi, keypair)));
       uses: null,
     };
 
-    let args: CreateMetadataAccountV3InstructionArgs = {
+    const args: CreateMetadataAccountV3InstructionArgs = {
       data,
       isMutable: true,
       collectionDetails: null,
     };
 
-    let tx = createMetadataAccountV3(umi, {
+    const tx = createMetadataAccountV3(umi, {
       ...accounts,
       ...args,
     });
 
-    let result = await tx.sendAndConfirm(umi);
-    console.log(bs58.encode(result.signature));
+    const result = await tx.sendAndConfirm(umi);
+    console.log("Signature:", bs58.encode(result.signature));
   } catch (e) {
     console.error(`Oops, something went wrong: ${e}`);
   }

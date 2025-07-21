@@ -13,7 +13,7 @@ import {
   updateMetadataAccountV2,
   findMetadataPda,
 } from "@metaplex-foundation/mpl-token-metadata";
-import base58 from "bs58";
+import bs58 from "bs58";
 
 import dotenv from "dotenv";
 
@@ -111,10 +111,7 @@ const metadataDescription = "Fresh rugs for your home";
     });
 
     const result = await tx.sendAndConfirm(umi);
-    console.log(
-      "✅ On-chain metadata updated:",
-      base58.encode(result.signature)
-    );
+    console.log("✅ On-chain metadata updated:", bs58.encode(result.signature));
   } catch (e) {
     console.error("❌ Failed:", e);
   }

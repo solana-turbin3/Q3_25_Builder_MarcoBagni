@@ -10,15 +10,25 @@ dotenv.config();
 const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 //Create a Solana devnet connection
-//const commitment: Commitment = "confirmed";
-const connection = new Connection("http://127.0.0.1:8899");
+const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 
-const token_decimals = 100_000_000n;
+const token_decimals = 10_000_000_000n;
 
 // Mint address
-const mint = new PublicKey(
-  process.env.MINT_T_2_ADDRESS || "YOUR_MINT_ADDRESS_HERE"
+const mintAddress =
+  process.env.MINT_T_1_ADDRESS_DEVNET ||
+  "95jWSX2bi7KLvWGtUYLx4pqdkFvoMQrU8g15eVpFewNX";
+console.log(
+  `🔍 Environment variable MINT_T_1_ADDRESS_DEVNET: ${process.env.MINT_T_1_ADDRESS_DEVNET}`
 );
+console.log(`🔍 Using mint address: ${mintAddress}`);
+
+if (mintAddress === "YOUR_MINT_ADDRESS_HERE") {
+  console.error("❌ Please set MINT_T_1_ADDRESS_DEVNET in your .env file");
+  process.exit(1);
+}
+
+const mint = new PublicKey(mintAddress);
 
 (async () => {
   try {

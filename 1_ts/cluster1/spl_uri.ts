@@ -1,4 +1,4 @@
-import wallet from "../wallet";
+import wallet from "../wallet.ts";
 import * as fs from "fs";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import {
@@ -7,13 +7,14 @@ import {
   signerIdentity,
   some,
   publicKey,
+  none,
 } from "@metaplex-foundation/umi";
 import { irysUploader } from "@metaplex-foundation/umi-uploader-irys";
 import {
   updateMetadataAccountV2,
   findMetadataPda,
 } from "@metaplex-foundation/mpl-token-metadata";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import bs58 from "bs58";
 
 import dotenv from "dotenv";
 
@@ -21,11 +22,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // === CONFIG ===
-const mintAddress = process.env.MINT_T_1_ADDRESS; // your token mint
-const imagePath = "../img/T100.jpg"; // your logo
-const metadataName = "turbin3-100";
-const metadataSymbol = "TRB3-100";
-const metadataDescription = "Wind-powered token 100 edition";
+const mintAddress = "9DQhaRJtV1zR5B4Y97khTWMu8WbJZYAL7tKJkT7pQPcC"; // your token mint
+const imagePath = "../img/LP_Token.jpg"; // your logo
+const metadataName = "LP-MarcOlistic";
+const metadataSymbol = "LP-TRB-42";
+const metadataDescription = "MarcOlistic LP Token";
 
 (async () => {
   // 1. Init UMI and signer
@@ -38,7 +39,7 @@ const metadataDescription = "Wind-powered token 100 edition";
   try {
     // 2. Upload image
     const imageBytes = fs.readFileSync(imagePath);
-    const imageFile = createGenericFile(imageBytes, "T100.jpg", {
+    const imageFile = createGenericFile(imageBytes, "LP_Token.jpg", {
       contentType: "image/jpeg",
     });
     const uploadedImage = await umi.uploader.upload([imageFile]);
@@ -54,9 +55,9 @@ const metadataDescription = "Wind-powered token 100 edition";
       description: metadataDescription,
       image: imageUri,
       attributes: [
-        { trait_type: "powered", value: "wind" },
-        { trait_type: "supply", value: "100" },
-        { trait_type: "decimals", value: "6" },
+        { trait_type: "pool", value: "Turbin3" },
+        { trait_type: "cool", value: "100" },
+        { trait_type: "fool", value: "1" },
       ],
       properties: {
         files: [{ uri: imageUri, type: "image/jpeg" }],
@@ -83,6 +84,9 @@ const metadataDescription = "Wind-powered token 100 edition";
     console.log("✅ Metadata JSON uploaded:", metadataUri);
 
     // 5. Update on-chain metadata
+    if (!mintAddress) {
+      throw new Error("MINT_T_1_ADDRESS is not set in your .env file");
+    }
     const mint = publicKey(mintAddress);
     const metadata = findMetadataPda(umi, { mint });
     const tx = await updateMetadataAccountV2(umi, {
@@ -91,7 +95,7 @@ const metadataDescription = "Wind-powered token 100 edition";
         name: metadataName,
         symbol: metadataSymbol,
         uri: metadataUri,
-        sellerFeeBasisPoints: 1,
+        sellerFeeBasisPoints: 500, // 5% (use 0 if you want no royalties)
         creators: some([
           {
             address: signer.publicKey,
@@ -99,8 +103,8 @@ const metadataDescription = "Wind-powered token 100 edition";
             share: 100,
           },
         ]),
-        collection: null,
-        uses: null,
+        collection: none(),
+        uses: none(),
       }),
       isMutable: some(true),
     });

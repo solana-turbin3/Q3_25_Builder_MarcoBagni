@@ -2,3 +2,5 @@ wallet.ts
 
 node_modules
 yarn.lock
+
+/tokens/
