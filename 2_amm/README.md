@@ -4,6 +4,21 @@ A decentralized, constant product AMM (x\*y=k) built on Solana using the Anchor 
 
 ---
 
+## 📋 How It Looks
+
+
+Pool & User Information<br>
+<img width="560" height="642" alt="amm-image-1" src="https://github.com/user-attachments/assets/360c7635-6fc1-4746-a56d-0f5160a04b6d" />
+
+
+Withdrawal<br>
+<img width="558" height="603" alt="amm-image-2" src="https://github.com/user-attachments/assets/0b0eab99-5be5-441f-95ca-920aeac8b5ce" />
+
+
+Swap<br>
+<img width="551" height="714" alt="amm-image-3" src="https://github.com/user-attachments/assets/e36acabc-6e2c-4bde-82ec-97fe0456ba35" />
+
+
 ## 📋 How It Works
 
 A classic constant product AMM (like Uniswap v2) for Solana:
