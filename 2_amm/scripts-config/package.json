@@ -1,0 +1,24 @@
+{
+  "name": "amm-scripts",
+  "version": "1.0.0",
+  "description": "AMM Testing Scripts",
+  "main": "index.js",
+  "scripts": {
+    "init": "cd .. && ts-node scripts/initialize-pool.ts",
+    "deposit": "cd .. && ts-node scripts/deposit-liquidity.ts",
+    "swap": "cd .. && ts-node scripts/swap-tokens.ts",
+    "withdraw": "cd .. && ts-node scripts/withdraw-liquidity.ts",
+    "balance": "cd .. && ts-node scripts/check-balances.ts",
+    "info": "cd .. && ts-node scripts/show-program-info.ts",
+    "test-all": "npm run init && npm run deposit && npm run balance && npm run swap && npm run balance && npm run withdraw && npm run balance"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@solana/spl-token": "^0.4.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.7.3"
+  }
+} 
