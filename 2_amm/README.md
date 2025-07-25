@@ -7,7 +7,8 @@ A decentralized, constant product AMM (x\*y=k) built on Solana using the Anchor 
 ## 📋 How It Looks
 
 Pool & User Information - Withdrawal - Swap<br>
-<img width="100%" alt="amm-image-1" src="https://github.com/user-attachments/assets/360c7635-6fc1-4746-a56d-0f5160a04b6d" />
+<img width="100%" alt="amm-image-1" src="https://github.com/user-attachments/assets/e20f77c4-0aca-4238-8328-ed73df7e3f2c" />
+
 
 ## 📋 How It Works
 
