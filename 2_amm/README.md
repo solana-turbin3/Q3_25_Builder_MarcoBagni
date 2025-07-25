@@ -9,27 +9,26 @@ A decentralized, constant product AMM (x\*y=k) built on Solana using the Anchor 
 Pool & User Information - Withdrawal - Swap<br>
 <img width="100%" alt="amm-image-1" src="https://github.com/user-attachments/assets/e20f77c4-0aca-4238-8328-ed73df7e3f2c" />
 
-
 ## 📋 How It Works
 
 A classic constant product AMM (like Uniswap v2) for Solana:
 
 ```
-┌───────────────┐      ┌────────────────────┐      ┌───────────────┐
-    👤 USER             🔐 AMM PROGRAM             👤 USER
+┌──────────────────┐      ┌────────────────────────┐      ┌──────────────────┐
+    👤 USER                    🔐 AMM PROGRAM                  👤 USER
 
- • Deposit X/Y   ◄──►   • Holds vaults      ◄──►   • Swap X for Y
- • Get LP tokens         • Mints LP tokens         • Add/remove liquidity
- • Withdraw anytime      • Enforces x*y=k         • Earns fees
-└───────────────┘      └────────────────────┘      └───────────────┘
-                             │
-                             │
-                  ┌────────────────────────┐
-                      💧 VAULTS (PDAs)
-                      • Hold Token X & Y
-                      • Program owns
-                      • Secure PDA
-                  └────────────────────────┘
+ • Deposit X/Y       ◄──►    • Holds vaults          ◄──►   • Swap X for Y
+ • Get LP tokens             • Mints LP tokens              • Add/remove liquidity
+ • Withdraw anytime          • Enforces x*y=k               • Earns fees
+└──────────────────┘      └────────────────────────┘      └──────────────────┘
+                                      │
+                                      │
+                          ┌────────────────────────┐
+                              💧 VAULTS (PDAs)
+                             • Hold Token X & Y
+                             • Program owns
+                             • Secure PDA
+                          └────────────────────────┘
 ```
 
 ### 🔐 PDA Security (Program Derived Addresses)
