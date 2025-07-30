@@ -1,0 +1,17 @@
+{
+  "wallet": {
+    "path": "~/.config/solana/id.json"
+  },
+  "network": {
+    "cluster": "devnet",
+    "rpcUrl": "https://api.devnet.solana.com"
+  },
+  "staking": {
+    "pointsPerStake": 10,
+    "maxUnstake": 5,
+    "freezePeriod": 86400
+  },
+  "nft": {
+    "mintAddress": "YOUR_NFT_MINT_ADDRESS"
+  }
+}

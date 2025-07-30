@@ -68,7 +68,8 @@ vault/.env
 **/.env
 
 
-/3_staking/
+
+/3_marketplace/
 /1_ts/
 
 /rock-pap-scis/
