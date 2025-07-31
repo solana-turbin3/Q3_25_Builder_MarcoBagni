@@ -4,6 +4,11 @@ A decentralized NFT marketplace built on Solana using the Anchor framework. This
 
 ---
 
+## 📋 How It Looks
+
+Admin & User View<br>
+<img width="100%" alt="marketplace" src="https://github.com/user-attachments/assets/ca378c27-e03c-4413-8928-d275252f4aac" />
+
 ## 📋 How It Works
 
 A secure NFT marketplace with escrow and fee management:
